@@ -2,7 +2,7 @@ import sqlalchemy as salc
 import json
 import pandas as pd
 
-with open("config.json") as config_file:
+with open("/Users/pvuda/Development/il_ai_creds.json") as config_file:
     config = json.load(config_file)
 
 # connect to Augur database
@@ -40,7 +40,16 @@ def fetch_data(repo_org, repo_name):
     ism_data = issue_msg_query(repo_org, repo_name)
     pr_data = pr_query(repo_org, repo_name)
     prm_data = pr_msg_query(repo_org, repo_name)
-
+    
+    if cmt_data.empty:
+        print(f"cmt_data for {repo_org}/{repo_name} is empty")
+    if ism_data.empty:
+        print(f"ism_data for {repo_org}/{repo_name} is empty")
+    if pr_data.empty:
+        print(f"pr_data for {repo_org}/{repo_name} is empty")
+    if prm_data.empty:
+        print(f"prm_data for {repo_org}/{repo_name} is empty")
+        
     return cmt_data, ism_data, pr_data, prm_data
 
 
@@ -133,7 +142,7 @@ def issue_msg_query(repo_org, repo_name):
                  SELECT
                     i.issue_id,
                     m.cntrb_id,
-                    i.closed_at as timestamp
+                    i.created_at as timestamp
                 FROM
                     repo_groups rg,
                     repo r,
@@ -151,13 +160,20 @@ def issue_msg_query(repo_org, repo_name):
         """)
 
     ism_data = pd.read_sql(ism_query, con=engine)
+    ism_data.to_csv('ism.csv')
+    
+    # Convert the 'timestamp' column to datetime, this will help in identifying and handling missing values.
+    ism_data['timestamp'] = pd.to_datetime(ism_data['timestamp'], errors='coerce')
+
+    # Drop rows where 'timestamp' is NaT (missing)
+    ism_data = ism_data.dropna(subset=['timestamp'])
 
     # reformat issue message data, combine contributor ids for each issue
     ism_data = ism_data.groupby('issue_id').agg({'cntrb_id': list, 'timestamp': 'last'}).reset_index()
-    
+
     # remove issues with only one contributor (no connection to be made)
     ism_data = ism_data[ism_data['cntrb_id'].apply(lambda x: len(x) > 1)]
-    ism_data = ism_data.sort_values('timestamp', ascending=False)
+    # ism_data = ism_data.sort_values('timestamp', ascending=False)
 
     return ism_data
 
@@ -243,11 +259,17 @@ def pr_msg_query(repo_org, repo_name):
           """)
 
     prm_data = pd.read_sql(prm_query, con=engine)
+    
+    # Convert the 'timestamp' column to datetime, this will help in identifying and handling missing values.
+    prm_data['timestamp'] = pd.to_datetime(prm_data['timestamp'], errors='coerce')
+
+    # Drop rows where 'timestamp' is NaT (missing)
+    prm_data = prm_data.dropna(subset=['timestamp'])
 
     # reformat pull request message data, combine contributor ids for each pr thread
     prm_data = prm_data.groupby('pull_request_id').agg({'cntrb_id': list, 'timestamp': 'last'}).reset_index()
     # remove pr threads with only one contributor (no connection to be made)
     prm_data = prm_data[prm_data['cntrb_id'].apply(lambda x: len(x) > 1)]
-    prm_data = prm_data.sort_values('timestamp', ascending=False)
+    # prm_data = prm_data.sort_values('timestamp', ascending=False)
 
     return prm_data

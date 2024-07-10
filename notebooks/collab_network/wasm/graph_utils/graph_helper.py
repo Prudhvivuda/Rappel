@@ -2,6 +2,7 @@ import numpy as np
 import networkx as nx
 import plotly.graph_objs as go
 import matplotlib.pyplot as plt
+import pandas as pd
 
 #------------------------------------------------------ THRESHOLD CALCULATION ------------------------------------------------------ 
 
@@ -191,7 +192,10 @@ def add_ism_data(G, data, start_date, end_date, weight):
     """
 
     # get issue message data for current interval
-    snapshot = data[(data['timestamp'] >= start_date) & (data['timestamp'] <= end_date)]
+    if not data.empty and 'timestamp' in data.columns:
+        snapshot = data[(data['timestamp'] >= start_date) & (data['timestamp'] <= end_date)]
+    else:
+        snapshot = pd.DataFrame() 
 
     for row in snapshot.itertuples():
         issue_id = row.issue_id
@@ -266,7 +270,10 @@ def add_prm_data(G, data, start_date, end_date, weight):
     """
 
     # get pull request message data for current interval
-    snapshot = data[(data['timestamp'] >= start_date) & (data['timestamp'] <= end_date)]
+    if not data.empty and 'timestamp' in data.columns:
+        snapshot = data[(data['timestamp'] >= start_date) & (data['timestamp'] <= end_date)]
+    else:
+        snapshot = pd.DataFrame() 
 
     for row in snapshot.itertuples():
         pr_id = row.pull_request_id
