@@ -160,7 +160,7 @@ def issue_msg_query(repo_org, repo_name):
         """)
 
     ism_data = pd.read_sql(ism_query, con=engine)
-    ism_data.to_csv('ism.csv')
+    # ism_data.to_csv('data/ism.csv')
     
     # Convert the 'timestamp' column to datetime, this will help in identifying and handling missing values.
     ism_data['timestamp'] = pd.to_datetime(ism_data['timestamp'], errors='coerce')

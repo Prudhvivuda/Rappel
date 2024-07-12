@@ -1,11 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# # Graph Analysis Helper functions
-
-# In[16]:
-
-
 import pandas as pd
 import numpy as np
 import collections
@@ -20,9 +12,6 @@ import json
 import matplotlib.colors as mcolors
 import random
 import uuid
-
-
-# In[17]:
 
 
 def get_repos(repos, engine):
@@ -53,8 +42,6 @@ def get_repos(repos, engine):
         repo_git_set.append(repo_git)
     return repo_set, repo_git_set
 
-
-# In[18]:
 
 
 def get_issue_contributors(repo_set, engine):
@@ -89,8 +76,6 @@ def get_issue_contributors(repo_set, engine):
     return issue_contrib
 
 
-# In[19]:
-
 
 def get_repos_outside(engine):
 
@@ -109,8 +94,6 @@ def get_repos_outside(engine):
     print(df_current_repo)
     return issue_contrib
 
-
-# In[20]:
 
 
 def get_pr_contributors(repo_set, engine):
@@ -145,8 +128,6 @@ def get_pr_contributors(repo_set, engine):
     return pr_contrib
 
 
-# In[21]:
-
 
 def get_commit_contributors(repo_set, engine):
 
@@ -180,8 +161,6 @@ def get_commit_contributors(repo_set, engine):
     return commit_contrib
 
 
-# In[22]:
-
 
 def get_prr_contributors(repo_set, engine):
 
@@ -213,8 +192,6 @@ def get_prr_contributors(repo_set, engine):
     return prr_contrib
 
 
-# In[23]:
-
 
 def created_melted_dfs(df):
 
@@ -225,9 +202,6 @@ def created_melted_dfs(df):
     df_melted = df_melted[df_melted[df_melted.columns[2]] != 0]
 
     return df_melted
-
-
-# In[24]:
 
 
 def get_page_ranks(graph, top, repo_dict, scores):
@@ -257,9 +231,6 @@ def get_page_ranks(graph, top, repo_dict, scores):
         top_repos[str(pr_dict)] = dict(sorted(pr_dicts[pr_dict].items(), key = itemgetter(1), reverse = True)[:top])
             
     return top_repos, pageranks, scores
-
-
-# In[25]:
 
 
 def get_betweenness_centrality(graph, top, repo_dict, scores):
@@ -295,9 +266,6 @@ def get_betweenness_centrality(graph, top, repo_dict, scores):
     return top_repos, bw_centrality, scores
 
 
-# In[26]:
-
-
 def get_closeness_centrality(graph, top, repo_dict, scores):
     
     """
@@ -325,9 +293,6 @@ def get_closeness_centrality(graph, top, repo_dict, scores):
         top_repos[str(cc_dict)] = dict(sorted(cc_dicts[cc_dict].items(), key = itemgetter(1), reverse = True)[:top])
             
     return top_repos, c_centrality, scores
-
-
-# In[27]:
 
 
 def plot_graph(graph, repo_dict, size, title, weights=None, with_labels=True, alpha=None, edge_color='k'):
@@ -395,9 +360,6 @@ def plot_graph(graph, repo_dict, size, title, weights=None, with_labels=True, al
     nx.draw_networkx(graph, node_color=node_colors, node_size=node_sizes, font_size=9, ax=ax, with_labels=with_labels, alpha=alpha, edge_color=edge_color)
 
 
-# In[28]:
-
-
 def project_nodes_edges_contributions(df):
     
     """
@@ -448,9 +410,6 @@ def project_nodes_edges_contributions(df):
     return res, commonRepoContributionsByContributor
 
 
-# In[ ]:
-
-
 def preprocess(df):
     
     """
@@ -469,8 +428,6 @@ def preprocess(df):
     
     return df_copy
 
-
-# In[29]:
 
 
 def calc_recency_weights(df):
@@ -497,9 +454,6 @@ def calc_recency_weights(df):
         )
     
     return df_copy
-
-
-# In[30]:
 
 
 def calc_tfidf_weights(df):
